@@ -18,7 +18,7 @@ include doc_build.mk
 endif
 
 #default DOC
-DOC?=ug
+DOC?=ds
 
 PDFLATEX = pdflatex -interaction=nonstopmode
 
@@ -42,7 +42,7 @@ TSRC+=signature.tex
 signature.tex: $(DOC)_signature.tex
 	mv $< $@
 
-ug_signature.tex pb_signature.tex ds_signature.tex:
+pb_signature.tex ds_signature.tex:
 	@echo `tail -n 1 name.tex`-USG-`tail -n 1 $(NAME)_version.tex`-`tail -n 1 shortHash.tex` > $@
 
 rn_signature.tex:
@@ -85,28 +85,6 @@ pb.pdf: debug results pb_figs pbtop.tex
 #pb top file containing the definition of sections to include
 pbtop.tex:
 	make doctop DOC=pb
-
-#build user guide document type
-ug.pdf: debug results figs ugtop.tex
-	$(PDFLATEX) -jobname ug ugtop.tex
-	if [ -f *.bib ]; then bibtex ug; fi
-	$(PDFLATEX) -jobname ug ugtop.tex
-	$(PDFLATEX) -jobname ug ugtop.tex
-
-
-#ug top file containing the definition of sections to include
-ugtop.tex:
-	if ls *_py_params_tab.tex > /dev/null 2>&1; then echo "\def\PYPARAMS{Y}" >> $@; fi
-	if ls *_confs_tab.tex > /dev/null 2>&1; then echo "\def\CONFS{Y}" >> $@; fi
-	if [ -f td.tex ]; then echo "\def\TD{Y}" >> $@; fi
-	if ls *_csrs_tab.tex > /dev/null 2>&1; then echo "\def\CSRS{Y}" >> $@; fi
-	if [ -f mems_tab.tex ]; then echo "\def\MEMS{Y}" >> $@; fi
-	if [ $(ASICSYNTH) == 1 ]; then echo "\def\ASICSYNTH{Y}" >> $@; fi
-	if [ $(FPGACOMP) == 1 ]; then echo "\def\FPGACOMP{Y}" >> $@; fi
-	if [ $(DOXYGEN) == 1 ]; then echo "\def\DOXYGEN{Y}" >> $@; fi
-	if ls linux.tex > /dev/null 2>&1; then echo "\def\LINUX{Y}" >> $@; fi
-	if [ $(CONFIDENTIAL) == 1 ]; then echo "\def\CONFIDENTIAL{Y}" >> $@; fi
-	make doctop DOC=ug
 
 #build design specification document type
 ds.pdf: debug results figs dstop.tex
@@ -172,7 +150,7 @@ clean:
 veryclean: clean
 	make -C figures clean
 
-test: clean debug ug.pdf clean debug pb.pdf clean debug ds.pdf clean debug
+test: clean debug pb.pdf clean debug ds.pdf clean debug
 	if [ -f tsrc/presentation.tex ]; then make presentation.pdf; fi
 
 debug: $(TSRC)

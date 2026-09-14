@@ -2,4 +2,7 @@
 %
 % SPDX-License-Identifier: MIT
 
-Add here any specific ip core description.
+Before anything else, software must call \texttt{versat\_init}, passing the
+accelerator's base address, to initialize the generated driver. Once
+initialized, a run is started and stopped through the generated API
+described in Section~\ref{sec:if_config_state}.

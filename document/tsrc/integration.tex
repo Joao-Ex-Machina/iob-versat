@@ -1,0 +1,18 @@
+% SPDX-FileCopyrightText: 2025 IObundle
+%
+% SPDX-License-Identifier: MIT
+
+Versat currently implements the Python setup approach that IOb-SoC uses to
+integrate peripherals into the rest of the SoC build system. Since Versat
+itself generates the accelerator, the top-level Python setup script must
+create the Python class that represents it; this class is produced by the
+\texttt{CreateVersatClass} function, which returns a class specific to the
+generated accelerator that behaves like any other peripheral class. The
+\href{https://github.com/IObundle/iob-soc-versat}{iob-soc-versat}
+repository provides a worked example of integrating Versat with IOb-SoC.
+
+Versat also ships a Nix package definition, which lets \texttt{nix-shell}
+users enter an environment with every dependency, and Versat itself,
+compiled automatically. The
+\href{https://github.com/IObundle/iob-soc-versat}{iob-soc-versat}
+repository also shows this package in use.

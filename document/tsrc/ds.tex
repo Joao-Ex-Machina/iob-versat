@@ -2,13 +2,13 @@
 %
 % SPDX-License-Identifier: MIT
 
-% Design Specification document type.
-% Built from the same sections as the User Guide (ug.tex), relabeled and
-% pruned for an internal, design-oriented audience instead of an end-user
-% one. Inspired by py2hwsw's own py2hwsw_document/document/ug.tex -> ds.pdf
-% relabeling (see py2hwsw PR #448): the ASIC Synthesis and FPGA Compilation
-% subsections are always included (not gated behind ASICSYNTH/FPGACOMP), and
-% the revision history page is dropped.
+% Design Specification document type: the sole document type used to
+% describe this core in depth, for both internal (design-oriented) and
+% external (end-user) audiences. Structure inspired by py2hwsw's own
+% py2hwsw_document/document/tsrc/ug.tex (see py2hwsw PR #448), which splits
+% its Introduction into "What Is X?" / "What Is X For?" / "What Problem
+% Does X Solve?" / "What Design Principles Underlie X?" and adds a
+% dedicated "Getting Started" chapter.
 
 \documentclass{ug}
 
@@ -43,8 +43,22 @@ Design Specification, V\version, Build \shortHash
 \setcounter{page}{1}
 \section{Introduction}
 \label{sec:intro}
+
+\subsection{What Is Versat?}
+\label{sec:what_is}
 \input{intro}
-\input{symb}
+
+\subsection{What Is Versat For?}
+\label{sec:what_for}
+\input{what_for}
+
+\subsection{What Problem Does Versat Solve?}
+\label{sec:problem}
+\input{problem}
+
+\subsection{What Design Principles Underlie Versat?}
+\label{sec:principles}
+\input{principles}
 
 \subsection{Features}
 \label{sec:feat}
@@ -53,6 +67,32 @@ Design Specification, V\version, Build \shortHash
 \subsection{Deliverables}
 \label{sec:deliv}
 \input{deliverables}
+
+\subsection{Publications}
+\label{sec:publications}
+\input{publications}
+
+\ifdefined\SECTIONCLEARPAGE
+\clearpage
+\fi
+\section{Getting Started}
+\label{sec:getting_started}
+
+\subsection{Dependencies}
+\label{sec:dependencies}
+\input{dependencies}
+
+\subsection{Compilation}
+\label{sec:gs_compilation}
+\input{gs_compilation}
+
+\subsection{Basic Usage}
+\label{sec:basic_usage}
+\input{basic_usage}
+
+\subsection{Integration in IOb-SoC}
+\label{sec:integration}
+\input{integration}
 
 \ifdefined\SECTIONCLEARPAGE
 \clearpage
@@ -72,6 +112,33 @@ Registers (CSR) are outlined and explained.
 \label{sec:py_params}
 \input{py_params}
 \fi
+
+\subsection{Architecture}
+\label{sec:architecture}
+
+\subsubsection{Dataflow Paradigm}
+\label{sec:dataflow}
+\input{dataflow}
+
+\subsubsection{Versat Specification Language}
+\label{sec:versat_spec}
+\input{versat_spec}
+
+\subsubsection{Data Validity and Delays}
+\label{sec:data_validity}
+\input{data_validity}
+
+\subsubsection{Configuration Sharing}
+\label{sec:config_sharing}
+\input{config_sharing}
+
+\subsubsection{Merging Units}
+\label{sec:merging_units}
+\input{merging_units}
+
+\subsubsection{Address Generation}
+\label{sec:address_gen}
+\input{address_gen}
 
 \subsection{Block Diagram}
 \label{sec:bdd}

@@ -2,4 +2,11 @@
 %
 % SPDX-License-Identifier: MIT
 
-Add here any specific ip core description.
+Versat uses Verilator to compile the generated accelerator into a
+C++-simulable model. The same model backs PC emulation, which lets the
+generated accelerator be exercised together with the rest of an IOb-SoC
+system without running a full RTL simulation; the only part of the design
+that PC emulation does not exercise faithfully is the interface between
+the accelerator and the surrounding system, which is emulated by a wrapper
+that Versat generates rather than by the real interconnect. Because of
+this, some bugs only manifest in RTL simulation and not in PC emulation.

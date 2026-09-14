@@ -1,0 +1,17 @@
+% SPDX-FileCopyrightText: 2025 IObundle
+%
+% SPDX-License-Identifier: MIT
+
+Building Versat requires:
+
+\begin{itemize}
+  \itemsep-0.5em
+  \item GNU Bash >= 5.1.16
+  \item GNU Make >= 4.3
+  \item GCC with C++17 support
+  \item Verilator >= 5
+\end{itemize}
+
+Build systems that use \texttt{nix-shell} can instead add Versat as a
+package; in that case, Versat is built automatically whenever it is needed,
+without installing the dependencies above manually.
