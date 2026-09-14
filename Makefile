@@ -106,7 +106,22 @@ clean:
 clean-all: clean
 	-rm -fr $(TOOL_BUILD_DIR)
 
-.PHONY: versat $(BUILD_DIR)/embeddedData.d
+# DOCUMENT
+DOC_DIR:=$(VERSAT_DIR)/document
+
+doc-build:
+	make -C $(DOC_DIR) build
+
+doc-view:
+	make -C $(DOC_DIR) view
+
+doc-debug:
+	make -C $(DOC_DIR) debug
+
+doc-clean:
+	if [ -f "$(DOC_DIR)/Makefile" ]; then make -C $(DOC_DIR) clean; fi
+
+.PHONY: versat $(BUILD_DIR)/embeddedData.d doc-build doc-view doc-debug doc-clean
 
 .SUFFIXES:
 

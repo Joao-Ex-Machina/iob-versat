@@ -4,3 +4,16 @@ libversat.a
 versat
 TAGS
 compile_flags.txt
+
+# document/ build artifacts (see document/Makefile)
+document/*.tex
+document/*.cls
+document/*.pdf
+document/*.log
+document/*.aux
+document/*.toc
+document/*.lof
+document/*.lot
+document/*.out
+document/figures/*.pdf
+document/figures/*.svg
