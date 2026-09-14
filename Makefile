@@ -121,7 +121,15 @@ doc-debug:
 doc-clean:
 	if [ -f "$(DOC_DIR)/Makefile" ]; then make -C $(DOC_DIR) clean; fi
 
-.PHONY: versat $(BUILD_DIR)/embeddedData.d doc-build doc-view doc-debug doc-clean
+# Design Specification document (same sections as the User Guide, see
+# document/tsrc/ds.tex)
+ds-build:
+	make -C $(DOC_DIR) build DOC=ds
+
+ds-view:
+	make -C $(DOC_DIR) view DOC=ds
+
+.PHONY: versat $(BUILD_DIR)/embeddedData.d doc-build doc-view doc-debug doc-clean ds-build ds-view
 
 .SUFFIXES:
 

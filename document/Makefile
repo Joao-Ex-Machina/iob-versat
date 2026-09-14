@@ -20,6 +20,8 @@ endif
 #default DOC
 DOC?=ug
 
+PDFLATEX = pdflatex -interaction=nonstopmode
+
 CONFIDENTIAL?=1
 
 TSRC = $(patsubst tsrc/%, ./%, $(wildcard tsrc/*))
@@ -40,7 +42,7 @@ TSRC+=signature.tex
 signature.tex: $(DOC)_signature.tex
 	mv $< $@
 
-ug_signature.tex pb_signature.tex:
+ug_signature.tex pb_signature.tex ds_signature.tex:
 	@echo `tail -n 1 name.tex`-USG-`tail -n 1 $(NAME)_version.tex`-`tail -n 1 shortHash.tex` > $@
 
 rn_signature.tex:
@@ -72,13 +74,13 @@ build: debug $(DOC).pdf
 
 #build presentation document type
 presentation.pdf: figs presentation.tex
-	pdflatex -jobname pres presentation.tex
-	pdflatex -jobname pres presentation.tex
+	$(PDFLATEX) -jobname pres presentation.tex
+	$(PDFLATEX) -jobname pres presentation.tex
 
 #build product brief document type
 pb.pdf: debug results pb_figs pbtop.tex
-	pdflatex -jobname pb pbtop.tex
-	pdflatex -jobname pb pbtop.tex
+	$(PDFLATEX) -jobname pb pbtop.tex
+	$(PDFLATEX) -jobname pb pbtop.tex
 
 #pb top file containing the definition of sections to include
 pbtop.tex:
@@ -86,10 +88,10 @@ pbtop.tex:
 
 #build user guide document type
 ug.pdf: debug results figs ugtop.tex
-	pdflatex -jobname ug ugtop.tex
+	$(PDFLATEX) -jobname ug ugtop.tex
 	if [ -f *.bib ]; then bibtex ug; fi
-	pdflatex -jobname ug ugtop.tex
-	pdflatex -jobname ug ugtop.tex
+	$(PDFLATEX) -jobname ug ugtop.tex
+	$(PDFLATEX) -jobname ug ugtop.tex
 
 
 #ug top file containing the definition of sections to include
@@ -105,6 +107,24 @@ ugtop.tex:
 	if ls linux.tex > /dev/null 2>&1; then echo "\def\LINUX{Y}" >> $@; fi
 	if [ $(CONFIDENTIAL) == 1 ]; then echo "\def\CONFIDENTIAL{Y}" >> $@; fi
 	make doctop DOC=ug
+
+#build design specification document type
+ds.pdf: debug results figs dstop.tex
+	$(PDFLATEX) -jobname ds dstop.tex
+	$(PDFLATEX) -jobname ds dstop.tex
+	$(PDFLATEX) -jobname ds dstop.tex
+
+#ds top file containing the definition of sections to include
+dstop.tex:
+	if ls *_py_params_tab.tex > /dev/null 2>&1; then echo "\def\PYPARAMS{Y}" >> $@; fi
+	if ls *_confs_tab.tex > /dev/null 2>&1; then echo "\def\CONFS{Y}" >> $@; fi
+	if [ -f td.tex ]; then echo "\def\TD{Y}" >> $@; fi
+	if ls *_csrs_tab.tex > /dev/null 2>&1; then echo "\def\CSRS{Y}" >> $@; fi
+	if [ -f mems_tab.tex ]; then echo "\def\MEMS{Y}" >> $@; fi
+	if [ $(DOXYGEN) == 1 ]; then echo "\def\DOXYGEN{Y}" >> $@; fi
+	if ls linux.tex > /dev/null 2>&1; then echo "\def\LINUX{Y}" >> $@; fi
+	if [ $(CONFIDENTIAL) == 1 ]; then echo "\def\CONFIDENTIAL{Y}" >> $@; fi
+	make doctop DOC=ds
 
 #include implementation results if available
 
@@ -122,8 +142,8 @@ rntop.tex:
 	make doctop DOC=rn
 
 rn.pdf: rntop.tex
-	pdflatex -jobname rn rntop.tex
-	pdflatex -jobname rn rntop.tex
+	$(PDFLATEX) -jobname rn rntop.tex
+	$(PDFLATEX) -jobname rn rntop.tex
 
 
 doctop:
@@ -152,7 +172,7 @@ clean:
 veryclean: clean
 	make -C figures clean
 
-test: clean debug ug.pdf clean debug pb.pdf clean debug
+test: clean debug ug.pdf clean debug pb.pdf clean debug ds.pdf clean debug
 	if [ -f tsrc/presentation.tex ]; then make presentation.pdf; fi
 
 debug: $(TSRC)

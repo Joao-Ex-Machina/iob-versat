@@ -12,6 +12,8 @@
 %\RequirePackage[includehead,includefoot,top=50pt,bottom=50pt,headheight=24pt,margin=1in]{geometry}
 \RequirePackage[includehead,includefoot,top=50pt,bottom=50pt,headheight=24pt]{geometry}
 \RequirePackage[hidelinks]{hyperref}
+% Anchor names derived from counters repeat across pagenumbering resets
+\hypersetup{hypertexnames=false}
 \RequirePackage{multirow}
 \RequirePackage{verbatim}
 \RequirePackage{geometry}
