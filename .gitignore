@@ -5,6 +5,9 @@ versat
 versatOutput/
 examples/simple_example/simple_example
 examples/simple_example/system.vcd
+examples/py2hwsw_example/iob_versat/hardware/
+examples/py2hwsw_example/iob_versat/software/
+examples/iob_versat_V*/
 TAGS
 compile_flags.txt
 
@@ -17,6 +20,7 @@ document/*.aux
 document/*.toc
 document/*.lof
 document/*.lot
+document/*.lol
 document/*.out
 document/figures/*.pdf
 document/figures/*.svg

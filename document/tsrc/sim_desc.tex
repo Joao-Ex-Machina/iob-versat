@@ -30,12 +30,4 @@ library itself is tested. The provided
 runs any such testbench under Verilator and reports the functional
 coverage it reaches:
 
-\begin{lstlisting}[language=make,caption={\texttt{hardware/simulation/coverage/Makefile}: Verilating and running a unit testbench for coverage.},label={lst:coverage_makefile}]
-$(VERILATED_PATH)/V%_tb: %_tb.v
-	verilator $(COV_FLAGS) --top-module $*_tb $< $(VSRC)
-
-%_coverage.rpt: $(VERILATED_PATH)/V%_tb
-	./$< +verilator+coverage+file+$*_cov.dat
-	verilator_coverage --write $(MERGED_DAT) $*_cov.dat
-	verilator_coverage --annotate $*_cov_annotated --annotate-min 1 --annotate-all $(MERGED_DAT)
-\end{lstlisting}
+\lstinputlisting[language=make,firstline=41,lastline=53,caption={\texttt{hardware/simulation/coverage/Makefile} (lines 41--53): Verilating and running a unit testbench for coverage.},label={lst:coverage_makefile}]{../hardware/simulation/coverage/Makefile}

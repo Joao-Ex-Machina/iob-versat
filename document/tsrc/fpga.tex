@@ -19,7 +19,4 @@ used in post-synthesis simulation.
 
 \subsubsection*{System-level FPGA Run}
 
-Upon request, files to run the core on the supported FPGA boards can be
-provided. The core is embedded in a RISC-V system and exercised in various
-modes, using a bare-metal software program written in the C programming
-language.
+Section~\ref{sec:simple_example_software} already shows this in practice: the \href{https://github.com/IObundle/iob-soc-versat}{iob-soc-versat} repository embeds the generated accelerator in a complete RISC-V SoC and exercises it with bare-metal C software on FPGA, through \texttt{make fpga-run TEST=EXAMPLE\_Simple}. Section~\ref{sec:py2hwsw_example} works through the accelerator standing alone on FPGA instead, without a surrounding SoC, through Py2HWSW's own \texttt{make fpga-build}.
