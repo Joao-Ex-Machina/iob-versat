@@ -65,3 +65,34 @@ Section~\ref{sec:if_config_state}. \texttt{RunAccelerator} above is simply
 a convenience wrapper: \texttt{StartAccelerator} immediately followed by
 \texttt{EndAccelerator}, for callers with nothing else to do while the
 accelerator runs.
+
+\subsubsection*{Config and State Addresses}
+
+On the embedded target, where \texttt{iptr} is 4 bytes wide, \texttt{accelConfig} and \texttt{accelState} resolve to real, fixed byte addresses relative to \texttt{versat\_base}. Table~\ref{tab:simple_example_addrs} gives them for \texttt{SimpleExample}, read directly from the address decode logic Versat generated in \texttt{versat\_configurations.v} and \texttt{versat\_instance.v}. PC emulation does not use this address map at all: there, \texttt{accelConfig} and \texttt{accelState} point at plain host memory buffers instead, since there is no real memory-mapped interface to decode addresses against.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|c|c|l|X|}
+\hline
+\rowcolor{iob-green}
+\textbf{Address} & \textbf{Direction} & \textbf{Field} & \textbf{Notes} \\
+\hline
+\hline
+0x00 & Read/Write & control register & write byte 0 to start a run; write byte 3, bit 31 for soft reset, bit 30 for signal loop; read bit 0 for \texttt{done} \\
+\hline
+0x04 & Write & \texttt{a.constant} & Config \\
+\hline
+0x04 & Read & \texttt{result.currentValue} & State; same address as \texttt{a.constant}, opposite direction \\
+\hline
+0x08 & Write & \texttt{b.constant} & Config \\
+\hline
+0x0C & Write & \texttt{result.disabled} & Config \\
+\hline
+0x10 & Write & \texttt{Delay0} & Config; internal, not exposed in \texttt{SimpleExampleConfig} \\
+\hline
+\end{tabularx}
+\caption{Config and State byte addresses for \texttt{SimpleExample}, relative to \texttt{versat\_base}.}
+\label{tab:simple_example_addrs}
+\end{table}
+
+Address \texttt{0x04} is read and written for two different purposes: a write there lands in the shadow copy of \texttt{a.constant}, subject to the one-run delay explained above, while a read there returns \texttt{result.currentValue} directly and combinationally, with no such delay on the read side; only when a Config write takes effect is delayed, never how promptly a State read reflects the accelerator's current output. Section~\ref{sec:if_mem_mapped} covers the separate, optional memory-mapped path into a unit's own native interface (reachable here at \texttt{versat\_base + 0x40}), which this example does not use.
