@@ -10,12 +10,12 @@ below.
 
 \subsubsection*{Standard Wires}
 
-\begin{verbatim}
+\begin{lstlisting}[language=Verilog,caption={Standard control wires, present on virtually every unit.},label={lst:if_standard}]
 input clk,
 input rst,
 input run,      // Asserted for a single cycle to start a run.
 input running,  // Asserted for the whole duration of a run.
-\end{verbatim}
+\end{lstlisting}
 
 A unit may turn off internal logic while \texttt{running} is deasserted, to
 save energy and speed up simulation.
@@ -25,14 +25,14 @@ save energy and speed up simulation.
 Inputs and outputs carry the unit's dataflow streams, one value per valid
 cycle:
 
-\begin{verbatim}
+\begin{lstlisting}[language=Verilog,caption={Data ports: one input/output pair per port index, plus optional \texttt{delay} and \texttt{done}.},label={lst:if_data}]
 input      [DATA_W-1:0] in0,
 (* versat_latency = T *)
 output     [DATA_W-1:0] out0,
 input      [DELAY_W-1:0] delay0, // How many cycles to wait before in0 is valid.
 output                   done,   // Only for units that take a variable amount
                                   // of time to finish; see below.
-\end{verbatim}
+\end{lstlisting}
 
 Since Versat must statically calculate how long it takes for data to
 traverse the dataflow graph (Section~\ref{sec:data_validity}), every output
@@ -53,10 +53,29 @@ Any input wire whose name does not match one of the other interfaces below
 is treated as part of the unit's \emph{Config} interface; any such output
 wire is part of its \emph{State} interface:
 
-\begin{verbatim}
+\begin{lstlisting}[language=Verilog,caption={Any wire not matching another interface's naming pattern is Config or State.},label={lst:if_config_state}]
 input  [ANY_SIZE:0] anyOtherInputName,  // Config
 output [ANY_SIZE:0] anyOtherOutputName, // State
-\end{verbatim}
+\end{lstlisting}
+
+As a concrete example, the whole of \texttt{Const} -- one of the simplest
+built-in units, used throughout this document's examples -- is a single
+Config input directly assigned to a data output:
+
+\begin{lstlisting}[language=Verilog,caption={\texttt{hardware/src/units/Const.v}: a minimal unit exposing a single Config wire (\texttt{constant}) and a single data output (\texttt{out0}).},label={lst:const_unit}]
+module Const #(
+   parameter DATA_W = 32
+) (
+
+   output [DATA_W-1:0] out0,
+
+   input [DATA_W-1:0] constant  // config
+);
+
+   assign out0 = constant;
+
+endmodule
+\end{lstlisting}
 
 All units' configurations live together in a single register inside the
 accelerator, which Versat exposes to software as a memory-mapped,
@@ -81,14 +100,14 @@ overlap configuration with execution.
 
 \subsubsection*{Memory-Mapped Interface}
 
-\begin{verbatim}
+\begin{lstlisting}[language=Verilog,caption={Memory-mapped interface, following the IOb native interface convention.},label={lst:if_mem_mapped}]
 input                 valid,
 output                rvalid,
 input  [DATA_W/8-1:0] wstrb,
 input  [  ADDR_W-1:0] addr,
 input  [  DATA_W-1:0] wdata,
 output [  DATA_W-1:0] rdata,
-\end{verbatim}
+\end{lstlisting}
 
 This is a simple memory-mapped interface, following the IOb native
 interface convention, generally used while the accelerator is not
@@ -104,7 +123,7 @@ accelerator-to-memory transfers) to speed them up.
 \subsubsection*{Databus Interface}
 \label{sec:if_databus}
 
-\begin{verbatim}
+\begin{lstlisting}[language=Verilog,caption={Databus interface, indexed per instance (here, index 0).},label={lst:if_databus}]
 input                     databus_ready_0,
 output                    databus_valid_0,
 output [  AXI_ADDR_W-1:0] databus_addr_0,
@@ -113,7 +132,63 @@ output [  AXI_DATA_W-1:0] databus_wdata_0,
 output [AXI_DATA_W/8-1:0] databus_wstrb_0,
 output [       LEN_W-1:0] databus_len_0,
 input                     databus_last_0,
-\end{verbatim}
+\end{lstlisting}
+
+\texttt{VRead} (Section~\ref{sec:address_gen}) is the built-in unit that
+implements this interface to stream data in from RAM; its port declaration
+shows the Databus and External Memory interfaces (below) side by side with
+its own Config wires:
+
+\begin{lstlisting}[language=Verilog,caption={\texttt{hardware/src/units/VRead.v}: excerpt of the port declaration.},label={lst:vread_ports}]
+module VRead #(
+   parameter DATA_W     = 32,
+   parameter /* versat:order */ ADDR_W = 18,
+   parameter PERIOD_W   = 16, // Must be 2 less than ADDR_W (boundary of 4) (for 32 bit DATA_W)
+   parameter AXI_ADDR_W = 32,
+   parameter AXI_DATA_W = 32,
+   parameter DELAY_W    = 7,
+   parameter LEN_W      = 16
+) (
+   input clk,
+   input rst,
+
+   input  running,
+   input  run,
+   output done,
+
+   // Databus interface
+   input                         databus_ready_0,
+   output                        databus_valid_0,
+   output     [  AXI_ADDR_W-1:0] databus_addr_0,
+   input      [  AXI_DATA_W-1:0] databus_rdata_0,
+   output     [  AXI_DATA_W-1:0] databus_wdata_0,
+   output     [AXI_DATA_W/8-1:0] databus_wstrb_0,
+   output     [       LEN_W-1:0] databus_len_0,
+   input                         databus_last_0,
+
+   // input / output data
+   (* versat_latency = 3 *) output reg [DATA_W-1:0] out0,
+
+   // External memory
+   output [    ADDR_W-1:0] ext_2p_addr_out_0,
+   output [    ADDR_W-1:0] ext_2p_addr_in_0,
+   output                  ext_2p_write_0,
+   output                  ext_2p_read_0,
+   input  [AXI_DATA_W-1:0] ext_2p_data_in_0,
+   output [AXI_DATA_W-1:0] ext_2p_data_out_0,
+
+   (* versat_stage="Read" *) input [AXI_ADDR_W-1:0] ext_addr,
+   (* versat_stage="Read" *) input                  pingPong,
+
+   (* versat_stage="Read" *) input [    ADDR_W-1:0] amount_minus_one,
+   (* versat_stage="Read" *) input [     LEN_W-1:0] length,
+   (* versat_stage="Read" *) input [AXI_ADDR_W-1:0] addr_shift,
+
+   (* versat_stage="Read" *) input enabled,
+   // ... (address-generation Config wires omitted; see the Address Generation section)
+   input [DELAY_W-1:0] delay0
+);
+\end{lstlisting}
 
 A unit's Databus interface, similar to an AXI-lite master except that the
 transfer length must be known upfront, gives it access to external RAM
@@ -132,7 +207,7 @@ addresses are generated).
 
 \subsubsection*{External Memory Interfaces}
 
-\begin{verbatim}
+\begin{lstlisting}[language=Verilog,caption={External Memory interfaces: two-port and true dual-port.},label={lst:if_ext_mem}]
 // Two-port
 output [ANY_SIZE:0] ext_2p_addr_out_0,
 output [ANY_SIZE:0] ext_2p_data_out_0,
@@ -147,7 +222,7 @@ output [ANY_SIZE:0] ext_dp_out_0_port_0,
 input  [ANY_SIZE:0] ext_dp_in_0_port_0,
 output              ext_dp_enable_0_port_0,
 output              ext_dp_write_0_port_0,
-\end{verbatim}
+\end{lstlisting}
 
 These interfaces let a unit ask Versat to instantiate and wire up a memory
 it needs, rather than declaring the memory itself: a two-port memory for

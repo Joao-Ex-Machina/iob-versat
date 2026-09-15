@@ -16,7 +16,7 @@ instantiates the subunits, and the second describes the connections between
 them; binary operations, such as additions and shifts, can be written
 directly in the second part using assignment-like syntax.
 
-\begin{verbatim}
+\begin{lstlisting}[language=VersatSpec,caption={A minimal Versat specification module.},label={lst:simple_example}]
 module SimpleExample(){ // Module definition with zero inputs.
   // This part instantiates units. Here, two Const units and one Reg unit.
   Const a; // Const outputs a constant, software-configurable value.
@@ -27,7 +27,7 @@ module SimpleExample(){ // Module definition with zero inputs.
   addition = a + b; // Assignment: one of the two connection statement kinds.
   addition -> result; // Connection: the other kind, output wired to input.
 }
-\end{verbatim}
+\end{lstlisting}
 
 The CPU must instruct the accelerator to perform a \emph{run}; for this
 example, a run takes one cycle, at the end of which \texttt{result} holds
@@ -39,7 +39,7 @@ generate.
 By default, a connection or an instance array uses port or index zero;
 ranges let a single statement describe several connections at once:
 
-\begin{verbatim}
+\begin{lstlisting}[language=VersatSpec,caption={Ports, ranges, and instance arrays.},label={lst:port_example}]
 module PortExample(x, y){ // Module with two inputs.
   Mem mem; // Mem has two input and two output ports.
 #
@@ -55,4 +55,4 @@ module ModuleUsage(){
   constants[0..1] -> example:0..1;
   example:0..1 -> result[0..1];
 }
-\end{verbatim}
+\end{lstlisting}

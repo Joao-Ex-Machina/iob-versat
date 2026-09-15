@@ -27,6 +27,7 @@
 
 \RequirePackage{float}
 \RequirePackage{color, colortbl}
+\RequirePackage{listings}
 \RequirePackage[section]{placeins}
 \RequirePackage{mathtools}
 \RequirePackage{amsthm}

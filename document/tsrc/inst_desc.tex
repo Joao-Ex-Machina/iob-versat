@@ -6,3 +6,77 @@ Before anything else, software must call \texttt{versat\_init}, passing the
 accelerator's base address, to initialize the generated driver. Once
 initialized, a run is started and stopped through the generated API
 described in Section~\ref{sec:if_config_state}.
+
+This API is declared in a generated \texttt{versat\_accel.h}, produced by
+instantiating the template \texttt{software/\allowbreak templates/\allowbreak versat\_header.tpl}
+(via \texttt{software/\allowbreak common/\allowbreak templateEngine.cpp}): every \texttt{@\{...\}}
+placeholder below is substituted at code-generation time, for example
+\texttt{@\{typeName\}} with the top-level module's name.
+
+\begin{lstlisting}[language=C,caption={\texttt{software/templates/versat\_header.tpl}: excerpt of the generated accelerator API.},label={lst:versat_header}]
+// NOTE: The address for memory mapped units depends on the address of
+//       the accelerator. Because of this, the full address can only
+//       be calculated after calling versat_init(iptr), which is the
+//       function that sets the versat_base variable. It is for this
+//       reason that the address info for every unit is a define. Addr
+//       variables must be instantiated only after calling
+//       versat_init.
+
+extern iptr versat_base;
+
+// Always call first before calling any other function.
+void versat_init(int base);
+
+// In pc-emul provides a low bound on performance.
+// In sim-run refines the lower bound but still likely to be smaller than
+// reality due to memory delays that are only present in real circuits.
+int GetAcceleratorCyclesElapsed();
+
+void RunAccelerator(int times); // Runs accelerator n times and waits for it
+                                 // to finish before ending.
+void StartAccelerator(); // Also waits for previous run to end if still running.
+void EndAccelerator();   // Ensure the accelerator has finished running.
+void ResetAccelerator();
+
+// Fast data movement using internal Versat DMA if possible, otherwise
+// regular memcpy style functions.
+void VersatMemoryCopy(volatile void* dest, volatile const void* data, int byteSize);
+
+extern volatile @{typeName}Config* accelConfig;
+extern volatile @{typeName}State*  accelState;
+\end{lstlisting}
+
+Putting this together with the \texttt{SimpleExample} module of
+Listing~\ref{lst:simple_example} (Section~\ref{sec:versat_spec}): its
+generated \texttt{Config} struct has one member per instance (\texttt{a}
+and \texttt{b}, each a \texttt{ConstConfig} exposing the \texttt{constant}
+Config wire of Listing~\ref{lst:const_unit}), and its \texttt{State} struct
+exposes \texttt{result.currentValue}, the State wire that \texttt{Reg}
+(\texttt{hardware/src/units/Reg.v}) derives directly from its output
+register:
+
+\begin{lstlisting}[language=C,caption={Illustrative instantiation and run sequence for \texttt{SimpleExample}.},label={lst:inst_example}]
+#include "versat_accel.h"
+
+int main(){
+  int base = ...; // Accelerator's memory-mapped base address, provided by
+                   // the surrounding IOb-SoC integration (Section 2.4).
+  versat_init(base);
+
+  accelConfig->a.constant = 3;
+  accelConfig->b.constant = 4;
+
+  RunAccelerator(1); // One run: 'addition' settles, 'result' latches the sum.
+
+  int sum = accelState->result.currentValue; // sum == 7
+
+  return 0;
+}
+\end{lstlisting}
+
+\texttt{StartAccelerator}/\texttt{EndAccelerator} let software overlap the
+CPU's own work with the accelerator's, as described in
+Section~\ref{sec:if_config_state}. \texttt{RunAccelerator} above is simply
+a convenience wrapper: \texttt{StartAccelerator} immediately followed by
+\texttt{EndAccelerator}, for callers with nothing else to do while the
+accelerator runs.

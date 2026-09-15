@@ -21,7 +21,7 @@ configuration for that unit, regardless of where in the hierarchy the
 module is instantiated. Unlike shared units, static units get their own,
 separate configuration structure.
 
-\begin{verbatim}
+\begin{lstlisting}[language=VersatSpec,caption={\texttt{static} versus \texttt{share config}.},label={lst:share_example}]
 module StaticExample(){
   static Const const;
 #
@@ -38,9 +38,9 @@ module ShareExample(){
 #
   {unit[0..1], static[0..1]} -> out:0..3;
 }
-\end{verbatim}
+\end{lstlisting}
 
-\begin{verbatim}
+\begin{lstlisting}[language=C,caption={Generated configuration structures for \texttt{ShareExample}: a \texttt{union} for shared units versus a separate structure for static ones.},label={lst:share_generated}]
 // Shared units: writing unit_0's config also changes unit_1's, since
 // they occupy the same memory inside the accelerator's config register.
 typedef struct {
@@ -55,4 +55,4 @@ typedef struct {
 typedef struct {
   int StaticExample_const_constant;
 } ShareExampleStatic;
-\end{verbatim}
+\end{lstlisting}

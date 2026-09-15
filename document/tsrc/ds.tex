@@ -17,6 +17,7 @@
 \category{Design Specification}
 
 \input{color}
+\input{listings_setup}
 
 \begin{document}
 
@@ -38,6 +39,8 @@ Design Specification, V\version, Build \shortHash
 \listoftables
 \clearpage
 \listoffigures
+\clearpage
+\lstlistoflistings
 \cleardoublepage
 \pagenumbering{arabic}
 \setcounter{page}{1}
@@ -72,6 +75,10 @@ Design Specification, V\version, Build \shortHash
 \label{sec:publications}
 \input{publications}
 
+\subsection{Lineage}
+\label{sec:lineage}
+\input{lineage}
+
 \ifdefined\SECTIONCLEARPAGE
 \clearpage
 \fi
@@ -99,12 +106,20 @@ Design Specification, V\version, Build \shortHash
 \fi
 \section{Description}
 
-This section gives a detailed description of the IP core. The high-level block
-diagram is presented, along with a description of its subblocks. The parameters and
-macros that define the core configuration are listed and explained. The
-interface signals are enumerated and described; if timing diagrams are needed,
-they are shown after the interface signals. Finally the Control and Status
-Registers (CSR) are outlined and explained.
+This section gives a detailed description of the IP core. Since Versat is a
+generator rather than a single fixed core, this description is split into
+two levels: Section~\ref{sec:architecture} describes the generator itself
+(the dataflow paradigm it implements, the specification language used to
+drive it, and the compiler passes that turn a specification into hardware
+and software), while Section~\ref{sec:bdd} and Section~\ref{sec:ifsig}
+describe the building blocks -- units and interfaces -- out of which every
+individual accelerator Versat produces is assembled. Code listings
+throughout this section either illustrate the specification language with
+short, self-contained examples, or are excerpted directly from the Versat
+source tree (paths are given in each listing's caption) so that the
+description stays traceable to the implementation. If timing diagrams are
+needed, they are shown after the interface signals. Finally the Control and
+Status Registers (CSR) are outlined and explained.
 
 
 \ifdefined\PYPARAMS
@@ -115,6 +130,21 @@ Registers (CSR) are outlined and explained.
 
 \subsection{Architecture}
 \label{sec:architecture}
+
+Turning a specification file into an accelerator is a compiler pipeline,
+implemented under \texttt{software/compiler/}: the specification is parsed
+(\texttt{versatSpecificationParser.cpp}) into a dataflow graph; delays are
+computed and balanced across the graph (\texttt{delayCalculation.cpp}, see
+Section~\ref{sec:data_validity}); \texttt{merge} constructs are flattened
+and their mutually-exclusive units combined (\texttt{merge.cpp}, see
+Section~\ref{sec:merging_units}); address-generation expressions are
+compiled into C functions (\texttt{addressGen.cpp}, see
+Section~\ref{sec:address_gen}); and finally the Verilog and C/C++ sources
+are emitted together (\texttt{codeGeneration.cpp} and
+\texttt{accelerator.cpp}), so that hardware and software can never drift
+apart. The following subsections describe each of these stages, from the
+model of computation they implement down to the language constructs a
+designer writes to drive them.
 
 \subsubsection{Dataflow Paradigm}
 \label{sec:dataflow}
