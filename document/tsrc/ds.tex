@@ -72,26 +72,44 @@ Design Specification, V\version, Build \shortHash
 \label{sec:publications}
 \input{publications}
 
+\subsection{Lineage}
+\label{sec:lineage}
+\input{lineage}
+
 \ifdefined\SECTIONCLEARPAGE
 \clearpage
 \fi
 \section{Getting Started}
 \label{sec:getting_started}
 
-\subsection{Dependencies}
+This section covers the tools Versat needs, the artifacts a first example needs, a complete walkthrough of that example, from its specification file to a running accelerator, and how to integrate the generated accelerator into a SoC.
+
+\subsection{Tool Dependencies}
 \label{sec:dependencies}
 \input{dependencies}
 
-\subsection{Compilation}
-\label{sec:gs_compilation}
-\input{gs_compilation}
+\subsection{Example Dependencies}
+\label{sec:example_dependencies}
+\input{example_dependencies}
 
-\subsection{Basic Usage}
-\label{sec:basic_usage}
-\input{basic_usage}
+\subsection{Simple Example}
+\label{sec:simple_example}
+\input{simple_example}
 
-\subsection{Integration in IOb-SoC}
-\label{sec:integration}
+\subsubsection{Compilation and Run}
+\label{sec:simple_example_run}
+\input{simple_example_run}
+
+\subsubsection{Outputs}
+\label{sec:simple_example_outputs}
+\input{simple_example_outputs}
+
+\subsubsection{Configuring and Running the Accelerator}
+\label{sec:simple_example_software}
+\input{simple_example_software}
+
+\subsection{Integrating the Generated Accelerator in a SoC}
+\label{sec:soc_integration}
 \input{integration}
 
 \ifdefined\SECTIONCLEARPAGE
