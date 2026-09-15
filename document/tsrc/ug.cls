@@ -39,6 +39,34 @@
 \RequirePackage{longtable}
 \RequirePackage{xltabular}
 \RequirePackage{hhline}
+\RequirePackage{tikz}
+\usetikzlibrary{positioning,calc,arrows.meta}
+
+\RequirePackage{listings}
+\RequirePackage{xcolor}
+% Define colors
+\definecolor{keywordcolor}{RGB}{0, 0, 255} % Blue for keywords
+\definecolor{commentcolor}{RGB}{0, 128, 0} % Green for comments
+\definecolor{stringcolor}{RGB}{255, 0, 0} % Red for strings
+\definecolor{backgroundcolor}{RGB}{245, 245, 245} % Light gray background
+
+% Set up listings
+\lstdefinestyle{Python}{
+    backgroundcolor=\color{backgroundcolor},
+    basicstyle=\ttfamily,
+    keywordstyle=\color{keywordcolor},
+    commentstyle=\color{commentcolor},
+    stringstyle=\color{stringcolor},
+    numbers=left,
+    numberstyle=\tiny,
+    stepnumber=1,
+    numbersep=5pt,
+    showstringspaces=false,
+    tabsize=4,
+    breaklines=true
+}
+% Set the default style for all lstlisting environments
+\lstset{style=Python}
 
 \ifdefined\DOXYGEN
 %% moved from doxygen.sty due to workaround for LaTex 2019 version and unmaintained tabu package
