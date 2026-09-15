@@ -13,4 +13,4 @@ Before using Versat, or even the example that runs through the rest of this sect
   \item Verilator >= 5 and Python 3, needed only to emulate the generated accelerator on a PC, not to build or run Versat itself
 \end{itemize}
 
-Build systems that use \texttt{nix-shell} can instead add Versat as a package; in that case, Versat is built automatically whenever it is needed, without installing the dependencies above manually. The \texttt{versat.nix} file at the repository root declares what building Versat needs, including libbfd, but not Verilator or Python; running \texttt{nix-shell -p libbfd verilator python3} provides every tool this section uses in a single environment.
+Build systems that use \texttt{nix-shell} can instead add Versat as a package. In that case, Versat is built automatically whenever it is needed, without installing the dependencies above manually. The \texttt{versat.nix} file at the repository root declares what building Versat needs, including libbfd, but not Verilator or Python. Running \texttt{nix-shell -p libbfd verilator python3} provides every tool this section uses in a single environment.

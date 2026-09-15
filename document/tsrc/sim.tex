@@ -11,6 +11,4 @@ all the test case files to make adding, modifying, or removing tests easy.
 
 \subsubsection*{System-level Simulation}
 
-Upon request, simulation files to run the core embedded in a RISC-V system can
-be provided. The core is exercised in various modes by the RISC-V processor,
-using a bare-metal software program written in the C programming language.
+Section~\ref{sec:simple_example_software} already shows this in practice: the \href{https://github.com/IObundle/iob-soc-versat}{iob-soc-versat} repository simulates the generated accelerator embedded in a complete RISC-V SoC, exercised by bare-metal C software, through \texttt{make sim-run TEST=EXAMPLE\_Simple}.

@@ -13,38 +13,11 @@ instantiating the template \texttt{software/\allowbreak templates/\allowbreak ve
 placeholder below is substituted at code-generation time, for example
 \texttt{@\{typeName\}} with the top-level module's name.
 
-\begin{lstlisting}[language=C,caption={\texttt{software/templates/versat\_header.tpl}: excerpt of the generated accelerator API.},label={lst:versat_header}]
-// NOTE: The address for memory mapped units depends on the address of
-//       the accelerator. Because of this, the full address can only
-//       be calculated after calling versat_init(iptr), which is the
-//       function that sets the versat_base variable. It is for this
-//       reason that the address info for every unit is a define. Addr
-//       variables must be instantiated only after calling
-//       versat_init.
+\lstinputlisting[language=C,firstline=47,lastline=68,caption={\texttt{software/templates/versat\_header.tpl} (lines 47--68): run-control API declared in every generated \texttt{versat\_accel.h}.},label={lst:versat_header}]{../software/templates/versat_header.tpl}
 
-extern iptr versat_base;
+Each generated header also declares two pointers, substituting \texttt{@\{typeName\}} for the top-level module's name:
 
-// Always call first before calling any other function.
-void versat_init(int base);
-
-// In pc-emul provides a low bound on performance.
-// In sim-run refines the lower bound but still likely to be smaller than
-// reality due to memory delays that are only present in real circuits.
-int GetAcceleratorCyclesElapsed();
-
-void RunAccelerator(int times); // Runs accelerator n times and waits for it
-                                 // to finish before ending.
-void StartAccelerator(); // Also waits for previous run to end if still running.
-void EndAccelerator();   // Ensure the accelerator has finished running.
-void ResetAccelerator();
-
-// Fast data movement using internal Versat DMA if possible, otherwise
-// regular memcpy style functions.
-void VersatMemoryCopy(volatile void* dest, volatile const void* data, int byteSize);
-
-extern volatile @{typeName}Config* accelConfig;
-extern volatile @{typeName}State*  accelState;
-\end{lstlisting}
+\lstinputlisting[language=C,firstline=176,lastline=177,caption={\texttt{software/templates/versat\_header.tpl} (lines 176--177): the per-accelerator Config and State accessors.}]{../software/templates/versat_header.tpl}
 
 Putting this together with the \texttt{SimpleExample} module of
 Listing~\ref{lst:simple_example} (Section~\ref{sec:versat_spec}): its
@@ -66,13 +39,25 @@ int main(){
   accelConfig->a.constant = 3;
   accelConfig->b.constant = 4;
 
-  RunAccelerator(1); // One run: 'addition' settles, 'result' latches the sum.
+  RunAccelerator(1); // Configuration reaches the datapath one run late
+                      // (Section~\ref{sec:if_config_state}), so this first
+                      // run still computes with the reset configuration.
+
+  int stale = accelState->result.currentValue; // stale == 0
+
+  RunAccelerator(1); // Second run: now computes with the values written above.
 
   int sum = accelState->result.currentValue; // sum == 7
 
   return 0;
 }
 \end{lstlisting}
+
+The first run above reads back \texttt{0}, not the sum, because of the
+shadow-register pipeline explained in Section~\ref{sec:if_config_state}:
+software's write only reaches the datapath at the start of the
+\emph{next} run. Section~\ref{sec:simple_example_software} walks through
+this same accelerator's actual output, run by run.
 
 \texttt{StartAccelerator}/\texttt{EndAccelerator} let software overlap the
 CPU's own work with the accelerator's, as described in
