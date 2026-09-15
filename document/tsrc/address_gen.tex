@@ -8,7 +8,7 @@ software to compute these addresses by hand, Versat lets the designer
 describe an address-generation expression, using \texttt{for} loops and
 arithmetic, that Versat turns into a generated C configuration function:
 
-\begin{verbatim}
+\begin{lstlisting}
 addressGen Read Simple(a){
   for x 0..a
   addr = 2 * x;
@@ -20,17 +20,17 @@ module AddressGenUserExample(){
 #
   v -> m;
 }
-\end{verbatim}
+\end{lstlisting}
 
 The \texttt{for} loop's bound (\texttt{a} above) is a runtime input to the
 generated function, not a compile-time constant, so firmware can choose how
 many values to transfer at run time:
 
-\begin{verbatim}
+\begin{lstlisting}
 int* input = ...;
 Simple_VRead(&accelConfig->v, input, 2);
 Simple_Mem(&accelConfig->m, 2);
-\end{verbatim}
+\end{lstlisting}
 
 As with any \texttt{for} loop in the specification language, the range
 includes its start and excludes its end, so calling the generated function

@@ -9,7 +9,7 @@ multiple paths converge on a single unit, every one of its inputs carries
 valid data on the same cycle; units never need to wait for one another, and
 the end user does not need to reason about these delays.
 
-\begin{verbatim}
+\begin{lstlisting}
 module ValidityExample(){
   Mem slow;
   Mem fast;
@@ -21,7 +21,7 @@ module ValidityExample(){
                       // so both operands of the sum arrive together.
   sum -> result;
 }
-\end{verbatim}
+\end{lstlisting}
 
 This default behaviour is correct whenever a computation only concerns
 values that arrive on the same cycle. When a computation must combine
@@ -29,7 +29,7 @@ values from different cycles, the designer can request an explicit delay
 using the \texttt{\{N\}} operator, which shifts a unit's output stream by
 $N$ cycles:
 
-\begin{verbatim}
+\begin{lstlisting}
 module DelayExample(){
   Mem mem;
 #
@@ -37,7 +37,7 @@ module DelayExample(){
   sum = mem{0} + mem{1} + mem{2} + mem{3};
   sum -> out;
 }
-\end{verbatim}
+\end{lstlisting}
 
 Assuming \texttt{mem} is configured to output the natural numbers starting
 at zero, the accelerator computes:

@@ -12,12 +12,12 @@ modules through the \texttt{merge} operation, which, like \texttt{module},
 defines a new unit type that can be instantiated, merged again, or used as
 the top-level module for code generation:
 
-\begin{verbatim}
+\begin{lstlisting}
 module Child1(){ Const a; Const b; # ... }
 module Child2(){ Const x; # ... }
 
 merge Merged = Child1 | Child2;
-\end{verbatim}
+\end{lstlisting}
 
 To merge units, Versat flattens the dataflow graphs of every merged type
 down to their most basic units, so hierarchy information is lost; Versat
@@ -27,7 +27,7 @@ is shared between the merged types, the generated structures use a
 \texttt{union}, and may need padding (\texttt{unused} members) to align
 each type's fields to the position they occupy in that shared register:
 
-\begin{verbatim}
+\begin{lstlisting}
 typedef struct { ConstConfig a; ConstConfig b; } Child1Config;
 
 // x was merged with Child1.a, so it occupies the first slot; if it had
@@ -44,4 +44,4 @@ typedef enum { MergeType_Child1 = 0, MergeType_Child2 = 1 } MergeType;
 // Software must call this to tell the accelerator which merged type is
 // currently active, before running it.
 void ActivateMergedAccelerator(MergeType type);
-\end{verbatim}
+\end{lstlisting}
